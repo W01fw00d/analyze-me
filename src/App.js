@@ -1,6 +1,6 @@
 import "./App.css";
 
-import Chart from "./components/Chart";
+import Chart from "./components/Chart/index";
 
 function App() {
   return (
