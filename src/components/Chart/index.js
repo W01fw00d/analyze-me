@@ -49,8 +49,7 @@ function Component() {
     <>
       <p>
         {" "}
-        Hi! I'm {data.name}, and these are my contributions this month (
-        {data.month}):
+        {data.name}'s stats for this month ({data.month}):
       </p>
       <Graph chartData={data.contributions} />
     </>
