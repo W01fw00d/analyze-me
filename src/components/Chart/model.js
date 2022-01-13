@@ -10,7 +10,6 @@ export async function getContributions(token, username) {
   const body = {
     query: `query {
             user(login: "${username}") {
-              name
               contributionsCollection(from: "${THIS_MONTH_1ST_DATE}" to: "${THIS_MONTH_LAST_DATE}") {
                 contributionCalendar {
                   weeks {

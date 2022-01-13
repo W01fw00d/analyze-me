@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LineChart, Line } from "recharts";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Label } from "recharts";
 
 import githubSecrets from "../../secrets/github";
 import { getContributions } from "./model";
@@ -12,19 +12,35 @@ function Component() {
       (data) => {
         // TODO: display a Chart with this month's contributions per day
 
-        setData(data.map((day) => ({ name: day.date, count: day.count })));
+        setData(
+          data.map((day) => ({
+            date: day.date.split("-")[2],
+            count: day.count,
+          }))
+        );
       }
     );
   }, []);
 
-  return data === undefined ? (
-    // TODO: display amb empty LineChart
-    <span>Loading...</span>
-  ) : (
-    <LineChart width={400} height={400} data={data}>
+  const Graph = ({ chartData }) => (
+    <LineChart width={900} height={500} data={chartData}>
       <Line type="monotone" dataKey="count" stroke="#8884d8" />
+      <CartesianGrid stroke="#ccc" />
+      <XAxis dataKey="date">
+        <Label value="Date" position="insideTopLeft" offset={23} />
+      </XAxis>
+      <YAxis>
+        <Label
+          value="Nº Contributions"
+          position="insideBottomLeft"
+          offset={28}
+          angle={-90}
+        />
+      </YAxis>
     </LineChart>
   );
+
+  return data === undefined ? <Graph /> : <Graph chartData={data} />;
 }
 
 export default Component;
