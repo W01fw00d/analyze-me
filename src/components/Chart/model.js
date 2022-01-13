@@ -3,14 +3,23 @@ export async function getContributions(token, username) {
     Authorization: `bearer ${token}`,
   };
 
-  // TODO: make this dynamic
-  const THIS_MONTH_1ST_DATE = "2022-01-01T00:00:00Z";
-  const THIS_MONTH_LAST_DATE = "2022-01-31T00:00:00Z";
+  var date = new Date();
+  var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+  var tzoffset = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
+
+  const toISOStringWithTZOffset = (date) =>
+    new Date(date - tzoffset).toISOString().slice(0, -1);
+
+  const thisMonth1stDate = toISOStringWithTZOffset(firstDay);
+  const thisMonthLastDate = toISOStringWithTZOffset(lastDay);
 
   const body = {
     query: `query {
             user(login: "${username}") {
-              contributionsCollection(from: "${THIS_MONTH_1ST_DATE}" to: "${THIS_MONTH_LAST_DATE}") {
+              name
+              contributionsCollection(from: "${thisMonth1stDate}" to: "${thisMonthLastDate}") {
                 contributionCalendar {
                   weeks {
                     contributionDays {
@@ -32,14 +41,19 @@ export async function getContributions(token, username) {
   });
   const result = await response.json();
 
-  return [].concat.apply(
-    [],
-    result.data.user.contributionsCollection.contributionCalendar.weeks.map(
-      (week) =>
+  const user = result.data.user;
+
+  return {
+    name: user.name,
+    month: date.toLocaleString("en-EN", { month: "long" }),
+    contributions: [].concat.apply(
+      [],
+      user.contributionsCollection.contributionCalendar.weeks.map((week) =>
         week.contributionDays.map((day) => ({
           date: day.date,
           count: day.contributionCount,
         }))
-    )
-  );
+      )
+    ),
+  };
 }

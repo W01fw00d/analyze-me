@@ -10,14 +10,14 @@ function Component() {
   useEffect(() => {
     getContributions(githubSecrets.token, githubSecrets.username).then(
       (data) => {
-        // TODO: display a Chart with this month's contributions per day
-
-        setData(
-          data.map((day) => ({
+        setData({
+          name: data.name,
+          month: data.month,
+          contributions: data.contributions.map((day) => ({
             date: day.date.split("-")[2],
             count: day.count,
-          }))
-        );
+          })),
+        });
       }
     );
   }, []);
@@ -40,7 +40,21 @@ function Component() {
     </LineChart>
   );
 
-  return data === undefined ? <Graph /> : <Graph chartData={data} />;
+  return data === undefined ? (
+    <>
+      <p> Loading... </p>
+      <Graph />
+    </>
+  ) : (
+    <>
+      <p>
+        {" "}
+        Hi! I'm {data.name}, and these are my contributions this month (
+        {data.month}):
+      </p>
+      <Graph chartData={data.contributions} />
+    </>
+  );
 }
 
 export default Component;
